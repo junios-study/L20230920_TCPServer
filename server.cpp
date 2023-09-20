@@ -34,18 +34,25 @@ int main()
 		srand((unsigned int)time(nullptr));
 
 		char Message[1024] = { 0, };
+		char Operators[] = { '+', '-', '/', '*', '%' };
 
-		int First = (rand() % 90) + 10;
-		int Second = (rand() % 90) + 10;
-		sprintf_s(Message, "%2d+%2d", First, Second);
+		int First = (rand() % 10000) + 1;
+		int Second = (rand() % 10000) + 1;
+		
+		memcpy(Message, &First, sizeof(First));
+		memcpy(Message+5, &Second, sizeof(Second));
+		Message[4] = Operators[rand() % 5];
 
-		int SendByte = send(ClientSocket, Message, 5, 0);
+		int SendByte = send(ClientSocket, Message, 9, 0);
 
 		char Result[1024] = { 0, };
-		int RecvByte = recv(ClientSocket, Result, sizeof(Result), 0);
+		int RecvByte = recv(ClientSocket, Result, 4, MSG_WAITALL);
 
-		cout << Message << "=";
-		cout << Result << endl;
+		cout << First;
+		cout << Message[4];
+		cout << Second;
+		cout << "=";
+		cout << *(int*)&Result << endl;
 
 		closesocket(ClientSocket);
 	}
