@@ -23,20 +23,32 @@ int main()
 	bind(ListenSocket, (SOCKADDR*)&ListenSock, sizeof(ListenSock));
 	listen(ListenSocket, SOMAXCONN);
 
-	SOCKADDR_IN ClientSock;
-	ZeroMemory(&ClientSock, sizeof(ClientSock));
-	int ClientSockLength = sizeof(ClientSock);
+	while (true)
+	{
+		SOCKADDR_IN ClientSock;
+		ZeroMemory(&ClientSock, sizeof(ClientSock));
+		int ClientSockLength = sizeof(ClientSock);
 
-	SOCKET ClientSocket = accept(ListenSocket, (SOCKADDR*)&ClientSock, &ClientSockLength);
+		SOCKET ClientSocket = accept(ListenSocket, (SOCKADDR*)&ClientSock, &ClientSockLength);
 
-	//blocking 
-	char Message[] = "10+20";
-	int SendByte = send(ClientSocket, Message, 5, 0);
+		srand((unsigned int)time(nullptr));
 
-	char Result[1024] = { 0, };
-	int RecvByte = recv(ClientSocket, Result, sizeof(Result), 0);
+		char Message[1024] = { 0, };
 
-	cout << Result << endl;
+		int First = (rand() % 90) + 10;
+		int Second = (rand() % 90) + 10;
+		sprintf_s(Message, "%2d+%2d", First, Second);
+
+		int SendByte = send(ClientSocket, Message, 5, 0);
+
+		char Result[1024] = { 0, };
+		int RecvByte = recv(ClientSocket, Result, sizeof(Result), 0);
+
+		cout << Message << "=";
+		cout << Result << endl;
+
+		closesocket(ClientSocket);
+	}
 
 	closesocket(ListenSocket);
 
